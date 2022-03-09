@@ -6,22 +6,26 @@ import javafx.geometry.HPos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 
 import java.util.ArrayList;
 
 public class Controller {
+
+    public Text textResult;
 
     @FXML
     private GridPane gridPane;
 
     private String originalEquation;
     private String number;
-    private ArrayList<Module> list;
+    private Equation equation;
 
     public void initializeAfterLoad()
     {
+        number = "";
         originalEquation = "";
-        list = new ArrayList<>();
+        equation = new Equation();
         /*
         for(Node node: gridPane.getChildren())
             GridPane.setHalignment(node, HPos.CENTER);
@@ -30,32 +34,57 @@ public class Controller {
     }
     //3 + 5.2 / 67 * 103 - (345 % 2) - 9=
     @FXML
-    void buttonPressed(ActionEvent event)
-    {
+    void buttonPressed(ActionEvent event) throws Exception {
         String text = ((Button)(event.getSource())).getText();
 
         // First input will be number (or parentheses)
 
         if(text.contentEquals("=")) {
             if(!number.isEmpty()){
-                list.add(new Module(number));
+                equation.add(new Module(number, true));
                 number = "";}
-            solveEquation();
+            equation.solve();
+            System.out.println(equation);
+            textResult.setText(equation.result());
+            reset();
         }
         else if(isNumber(text.charAt(0)))
             number += text;
         else {
-            list.add(new Module(number));
-            list.add(new Module(text));
+            equation.add(new Module(number, true));
+            equation.add(new Module(text, false));
             number = "";
         }
 
 
     }
-
-    private void solveEquation()
-    {
+/*
+    private void solveEquation() throws Exception {
         // Traverse through ArrayList
+        // 7 + 3 / 4 * 6.7
+        System.out.print(equation);
+
+        int x = equation.find("x");
+
+        /*
+            1. Traverse through the list and look for 'x'
+
+            int x = equationList.find(
+
+            while(xIsFound)
+            {
+
+            }
+            2. Next, look for '/'
+            3. Next, look for '+'
+
+    }
+*/
+    private void reset()
+    {
+        number = "";
+        equation.clear();
+    }
 
     @FXML
     void numberPressed(ActionEvent event)
@@ -64,7 +93,7 @@ public class Controller {
 
         if(text.charAt(0) == 61) // if its equal sign
         {
-            solveEquation(originalEquation);
+//            solveEquation();
         }
         else
         {
@@ -80,7 +109,7 @@ public class Controller {
 
         if(text.charAt(0) == 61) // if its equal sign
         {
-            solveEquation(originalEquation);
+//            solveEquation();
         }
         else
         {
@@ -146,9 +175,9 @@ public class Controller {
                 - return equation
 
          */
-    }
+//    }
 
-    private double add()
+//    private double add()
 
     private boolean isNumber(char chr)
     {
@@ -158,7 +187,7 @@ public class Controller {
            chr == ('(') ||
            chr == (')') ||
             chr == ('%') ||
-            chr == ('*'))
+            chr == ('x'))
         {
             return false;
         }
