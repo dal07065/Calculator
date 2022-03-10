@@ -14,22 +14,14 @@ public class Controller {
 
     public Text textResult;
 
-    @FXML
-    private GridPane gridPane;
+    private boolean solveDone;
 
     private String originalEquation;
-    private String number;
-    private Equation equation;
 
     public void initializeAfterLoad()
     {
-        number = "";
+        solveDone = false;
         originalEquation = "";
-        equation = new Equation();
-        /*
-        for(Node node: gridPane.getChildren())
-            GridPane.setHalignment(node, HPos.CENTER);
-        */
 
     }
     //3 + 5.2 / 67 * 103 - (345 % 2) - 9=
@@ -40,51 +32,94 @@ public class Controller {
         // First input will be number (or parentheses)
 
         if(text.contentEquals("=")) {
-            if(!number.isEmpty()){
-                equation.add(new Module(number, true));
-                number = "";}
-            equation.solve();
-            System.out.println(equation);
-            textResult.setText(equation.result());
-            reset();
+            // solve previous equation
+            solve(originalEquation);
+            // originalEquation = "";
+            textResult.setText(originalEquation);
+            solveDone = true;
         }
         else if(isNumber(text.charAt(0)))
-            number += text;
+        {
+            if(solveDone)
+                initializeAfterLoad();
+            originalEquation += text;
+            textResult.setText(originalEquation);
+
+        }
         else {
-            equation.add(new Module(number, true));
-            equation.add(new Module(text, false));
-            number = "";
+            // solve previous equation (DONT if no operation is found in originalEquation)
+            if(solve(originalEquation))
+            {
+                textResult.setText(originalEquation);
+            }
+            originalEquation += text;
+            solveDone = false;
+
         }
 
 
     }
-/*
-    private void solveEquation() throws Exception {
+
+    private boolean solve(String equation) throws Exception {
         // Traverse through ArrayList
-        // 7 + 3 / 4 * 6.7
-        System.out.print(equation);
+        // 72.5+36
+        System.out.println(originalEquation);
 
-        int x = equation.find("x");
+        int operationIndex = findOperation(equation);
 
-        /*
-            1. Traverse through the list and look for 'x'
+        if(operationIndex == -1)
+            return false;
 
-            int x = equationList.find(
+        double result = 0;
+        double firstNum = Double.parseDouble(equation.substring(0, operationIndex));
+        double secondNum = Double.parseDouble(equation.substring(operationIndex+1));
 
-            while(xIsFound)
-            {
+        switch(equation.substring(operationIndex, operationIndex+1))
+        {
+            case "x":
+                result = firstNum * secondNum;
+                originalEquation = String.valueOf(result);
+                break;
 
-            }
-            2. Next, look for '/'
-            3. Next, look for '+'
+            case "/":
+                result = firstNum / secondNum;
+                originalEquation = String.valueOf(result);
+                break;
+
+            case "+":
+                result = firstNum + secondNum;
+                originalEquation = String.valueOf(result);
+                break;
+
+            case "-":
+                result = firstNum - secondNum;
+                originalEquation = String.valueOf(result);
+                break;
+
+            case "%":
+                result = firstNum % secondNum;
+                originalEquation = String.valueOf(result);
+                break;
+
+
+        }
+        return true;
+    }
+
+    private int findOperation(String originalEquation) {
+
+        String operation = "";
+
+        for(int i = 0; i < originalEquation.length(); i++)
+        {
+            if(!isNumber(originalEquation.charAt(i)))
+                return i;
+        }
+
+        return -1;
 
     }
-*/
-    private void reset()
-    {
-        number = "";
-        equation.clear();
-    }
+
 
     @FXML
     void numberPressed(ActionEvent event)

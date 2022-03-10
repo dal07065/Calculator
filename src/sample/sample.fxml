@@ -14,7 +14,7 @@
    <children>
       <HBox alignment="BOTTOM_RIGHT">
          <children>
-            <Text fx:id="textResult" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="RIGHT" wrappingWidth="286.1368637084961">
+            <Text fx:id="textResult" strokeType="OUTSIDE" strokeWidth="0.0" text="Enter a number..." textAlignment="RIGHT" wrappingWidth="286.1368637084961">
                <font>
                   <Font size="36.0" />
                </font>
